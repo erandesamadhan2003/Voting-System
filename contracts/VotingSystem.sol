@@ -22,13 +22,11 @@ contract VotingSystem {
         uint timestamp;
     }
 
-    mapping(address => bool) public admins;
     mapping(uint => Candidate) public candidates;
     mapping(address => Voter) public voters;
 
     uint public candidateCount;
     uint public totalVotes;
-    uint public adminCount;
 
     uint[] public candidateIds;
     address[] public voterList;
@@ -41,11 +39,6 @@ contract VotingSystem {
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner");
-        _;
-    }
-
-    modifier onlyAdmin() {
-        require(admins[msg.sender] || msg.sender == owner, "Only admin");
         _;
     }
 
@@ -71,8 +64,6 @@ contract VotingSystem {
 
     constructor() {
         owner = msg.sender;
-        admins[msg.sender] = true;
-        adminCount = 1;
         electionState = ElectionState.NotStarted;
     }
 
@@ -80,7 +71,7 @@ contract VotingSystem {
         string memory name,
         string memory party,
         string memory description
-    ) public onlyAdmin electionNotStarted {
+    ) public onlyOwner electionNotStarted {
         candidateCount++;
         candidates[candidateCount] = Candidate(candidateCount, name, party, description, 0);
         candidateIds.push(candidateCount);
@@ -96,21 +87,11 @@ contract VotingSystem {
         return candidateIds;
     }
 
-    function authorizeVoter(address voterAddr) public onlyAdmin {
+    function authorizeVoter(address voterAddr) public onlyOwner {
         require(!voters[voterAddr].isRegistered, "Already authorized");
         voters[voterAddr].isRegistered = true;
         voterList.push(voterAddr);
         emit VoterAuthorized(voterAddr);
-    }
-
-    function authorizeMultipleVoters(address[] memory voterAddrs) public onlyAdmin {
-        for (uint i = 0; i < voterAddrs.length; i++) {
-            if (!voters[voterAddrs[i]].isRegistered) {
-                voters[voterAddrs[i]].isRegistered = true;
-                voterList.push(voterAddrs[i]);
-                emit VoterAuthorized(voterAddrs[i]);
-            }
-        }
     }
 
     function getVoterInfo(address voterAddr) public view returns (Voter memory) {
@@ -130,19 +111,14 @@ contract VotingSystem {
         return (true, c.id, c.name, c.party, voter.timestamp);
     }
 
-    function startElection() public onlyAdmin electionNotStarted {
+    function startElection() public onlyOwner electionNotStarted {
         require(candidateCount > 0, "No candidates");
         electionState = ElectionState.Active;
         emit ElectionStarted(block.timestamp);
     }
 
-    function endElection() public onlyAdmin {
+    function endElection() public onlyOwner {
         require(electionState == ElectionState.Active, "Not active");
-        electionState = ElectionState.Ended;
-        emit ElectionEnded(block.timestamp);
-    }
-
-    function pauseElectionEmergency() public onlyAdmin {
         electionState = ElectionState.Ended;
         emit ElectionEnded(block.timestamp);
     }
@@ -192,25 +168,8 @@ contract VotingSystem {
         return (electionState, candidateCount, totalVotes, voterList.length);
     }
 
-    function addAdmin(address newAdmin) public onlyOwner {
-        require(!admins[newAdmin], "Already admin");
-        admins[newAdmin] = true;
-        adminCount++;
-    }
-
-    function removeAdmin(address oldAdmin) public onlyOwner {
-        require(admins[oldAdmin], "Not admin");
-        require(oldAdmin != owner, "Cannot remove owner");
-        admins[oldAdmin] = false;
-        adminCount--;
-    }
-
     function transferOwnership(address newOwner) public onlyOwner {
         require(newOwner != address(0), "Invalid");
         owner = newOwner;
-        if (!admins[newOwner]) {
-            admins[newOwner] = true;
-            adminCount++;
-        }
     }
 }
