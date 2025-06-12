@@ -1,0 +1,14 @@
+{
+  "network": "sepolia",
+  "contractAddress": "0x920ec9089A56DeEf46eE5D0bA4bBce87767be176",
+  "deployer": "0x5109A791a61FA963F1770e5A4A6d1B5f13b1079c",
+  "owner": "0x5109A791a61FA963F1770e5A4A6d1B5f13b1079c",
+  "deploymentTime": "2025-06-12T16:39:40.640Z",
+  "transactionHash": "0xeef237918d0af899044b67c359063e3c8e441ed40fccce7bdd6e669385645c00",
+  "blockNumber": 8533839,
+  "gasUsed": "2654960",
+  "gasPrice": "60955536",
+  "deploymentCost": "0.00016183450985856",
+  "etherscanUrl": "https://sepolia.etherscan.io/address/0x920ec9089A56DeEf46eE5D0bA4bBce87767be176",
+  "transactionUrl": "https://sepolia.etherscan.io/tx/0xeef237918d0af899044b67c359063e3c8e441ed40fccce7bdd6e669385645c00"
+}
