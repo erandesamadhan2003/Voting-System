@@ -30,3 +30,9 @@ export const getReadOnlyContract = () => {
   const provider = getProvider(); 
   return new ethers.Contract(CONTRACT_ADDRESS, VotingSystemABI.abi, provider);
 };
+
+export const getOwner = async () => {
+  const contract = await getContract();
+  const owner = await contract.owner();
+  return owner;
+}

@@ -3,14 +3,13 @@ import React from 'react';
 import './App.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { connectWallet } from './features/connection/connectionSlice.js';
-import { getContract } from './utils/web3utils.js';
+import { getContract, getOwner } from './utils/web3utils.js';
 
 function App() {
     const dispatch = useDispatch();
     const { account, isConnected, isConnecting, error } = useSelector(state => state.connection);
 
     const handleConnect = () => dispatch(connectWallet());
-
     const fetchElectionState = async () => {
         try {
             const contract = await getContract();
