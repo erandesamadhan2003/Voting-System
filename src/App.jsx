@@ -1,31 +1,36 @@
-import './App.css'
-import { getContract, getProvider } from './utils/etherutils';
-import React, { useState } from 'react';
+// src/App.jsx
+import React from 'react';
+import './App.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { connectWallet } from './features/connection/connectionSlice.js';
+import { getContract } from './utils/web3utils.js';
+
 function App() {
-  const [account, setAccount] = useState("");
+    const dispatch = useDispatch();
+    const { account, isConnected, isConnecting, error } = useSelector(state => state.connection);
 
-  const connectWallet = async () => {
-    const provider = getProvider();
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    const address = await signer.getAddress();
-    setAccount(address);
-    console.log("Connected Account:", address);
-  };
+    const handleConnect = () => dispatch(connectWallet());
 
-  const fetchElectionState = async () => {
-    const contract = await getContract();
-    const state = await contract.electionState();
-    console.log("Election State:", state);
-  };
+    const fetchElectionState = async () => {
+        try {
+            const contract = await getContract();
+            const state = await contract.electionState();
+            console.log("Election State:", state);
+        } catch (err) {
+            console.error("Error fetching election state:", err);
+        }
+    };
 
-  return (
-    <div>
-      <button onClick={connectWallet}>Connect Wallet</button>
-      <p>Account: {account}</p>
-      <button onClick={fetchElectionState}>Check Election State</button>
-    </div>
-  );
+    return (
+        <div>
+            <button onClick={handleConnect} disabled={isConnecting}>
+                {isConnecting ? "Connecting..." : "Connect Wallet"}
+            </button>
+            {account && <p>Account: {account}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {isConnected && <button onClick={fetchElectionState}>Check Election State</button>}
+        </div>
+    );
 }
 
-export default App
+export default App;
