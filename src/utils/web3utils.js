@@ -36,3 +36,4 @@ export const getOwner = async () => {
   const owner = await contract.owner();
   return owner;
 }
+
