@@ -49,8 +49,6 @@ export const switchNetwork = createAsyncThunk("Web3/switchNetwork", async (chain
         const accounts = await signer.getAddress();
         const { chainId: currentChainId } = await provider.getNetwork();
         return {
-            provider,
-            signer,
             account: accounts,
             chainId: currentChainId,
         };

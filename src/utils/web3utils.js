@@ -12,7 +12,7 @@ export const getProvider = () => {
         provider = new ethers.BrowserProvider(window.ethereum)
     }
     return provider;
-    
+
 }
 
 export const getSigner = async () => {
@@ -22,18 +22,23 @@ export const getSigner = async () => {
 };
 
 export const getContract = async () => {
-  const signer = await getSigner(); 
-  return new ethers.Contract(CONTRACT_ADDRESS, VotingSystemABI.abi, signer);
+    const signer = await getSigner();
+    return new ethers.Contract(CONTRACT_ADDRESS, VotingSystemABI.abi, signer);
 };
 
 export const getReadOnlyContract = () => {
-  const provider = getProvider(); 
-  return new ethers.Contract(CONTRACT_ADDRESS, VotingSystemABI.abi, provider);
+    const provider = getProvider();
+    return new ethers.Contract(CONTRACT_ADDRESS, VotingSystemABI.abi, provider);
 };
 
 export const getOwner = async () => {
-  const contract = await getContract();
-  const owner = await contract.owner();
-  return owner;
+    const contract = await getContract();
+    const owner = await contract.owner();
+    return owner;
 }
 
+export const getVoterInfo = async (address) => {
+    const contract  = await getContract();
+    const isRegistered = await contract.getVoterInfo(address);
+    return isRegistered;
+}
