@@ -84,7 +84,6 @@ export const registerCandidate = createAsyncThunk(
             );
             const receipt = await tx.wait();
 
-            // Extract candidate ID from events
             const event = receipt.events?.find((e) => e.event === 'CandidateRegistered');
             const candidateId = event?.args?.candidateId?.toNumber();
 
@@ -158,7 +157,6 @@ const candidatesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Fetch candidates
             .addCase(fetchCandidates.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -172,7 +170,6 @@ const candidatesSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
-            // Register candidate
             .addCase(registerCandidate.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -186,7 +183,6 @@ const candidatesSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
-            // Fetch candidate details
             .addCase(fetchCandidateDetails.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;

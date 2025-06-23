@@ -15,7 +15,7 @@ export const getProvider = () => {
 
 }
 
-export const getSigner = async () => {
+export const getSigner = async () => { 
     const provider = getProvider();
     const signer = await provider.getSigner();
     return signer;
