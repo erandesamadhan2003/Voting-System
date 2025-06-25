@@ -11,21 +11,40 @@ const initialState = {
     error: null
 }
 
-export const fetchElectionStatus = createAsyncThunk('election/fetchElectionStatus', async (_, { rejectWithValue }) => {
-    try {
-        const contract = getContract();
-        const electionStatus = await contract.getElectionState();
-        return {
-            electionState: electionStatus.electionState,
-            totalCandidates: electionStatus.totalCandidates.toNumber(),
-            totalVotes: electionStatus.totalVotes.toNumber(),
-            totalVoters: electionStatus.totalVoters.toNumber(),
-        };
-    } catch (error) {
-        console.error("Error fetching election status:", error);
-        return rejectWithValue(error.message);
+const ElectionStateEnum = {
+    0: 'NotStarted',
+    1: 'Active',
+    2: 'Ended',
+};
+
+export const fetchElectionStatus = createAsyncThunk(
+    'election/fetchElectionStatus',
+    async (_, { rejectWithValue }) => {
+        try {
+            const contract = await getContract();
+            const electionStatus = await contract.getElectionStatus();
+
+            const electionStateIndex = Number(electionStatus[0]); 
+            const totalCandidates = Number(electionStatus[1]);
+            const totalVotes = Number(electionStatus[2]);
+            const totalVoters = Number(electionStatus[3]);
+
+            const electionState = ElectionStateEnum[electionStateIndex];
+            console.log("Election state:", electionState);
+
+            return {
+                electionState,
+                totalCandidates,
+                totalVotes,
+                totalVoters,
+            };
+        } catch (error) {
+            console.error("Error fetching election status:", error);
+            return rejectWithValue(error.message);
+        }
     }
-})
+);
+
 
 export const startElection = createAsyncThunk('election/startElection', async (_, { rejectWithValue }) => {
     try {

@@ -6,11 +6,17 @@ import { connectWallet } from './features/connection/connectionSlice.js';
 import { getOwner } from './utils/web3utils.js';
 import { getContract } from './utils/web3utils';
 import { checkUserRole, checkVotingStatus } from './features/authentication/authenticationSlice';
+import { fetchElectionStatus } from './features/Election/electionSlice';
 
 function App() {
     const dispatch = useDispatch();
     const { account, isConnected, isConnecting, error } = useSelector(state => state.connection);
-
+    const { electionState, totalCandidates, totalVotes, totalVoters} = useSelector(state => state.election);
+    const { candidates, candidateIds } = useSelector(state => state.candidate)
+    const candidateData = {
+        name: "samadhan Erande",
+        party: "BlockChain Developer"
+    }
     const handleConnect = async () => {
         dispatch(connectWallet());
         if (!account) return;
@@ -22,7 +28,8 @@ function App() {
             const contract = await getContract();
             const owner = await getOwner();
             const state = await contract.electionState();
-            console.log("Election State:", state);
+            console.log(state);
+            dispatch(fetchElectionStatus());
         } catch (err) {
             console.error("Error fetching election state:", err);
         }
